@@ -8,7 +8,7 @@ from loguru import logger as LOGGER
 requests.adapters.DEFAULT_RETRIES = 5
 SESSION = requests.Session()
 SESSION.keep_alive = False
-SLEEP_TIME = 2
+SLEEP_TIME = 4
 
 user_agent = 'Mozilla/5.0 ven(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
 
@@ -42,7 +42,7 @@ def send(url, token='', max_retry=1):
 
 
 def save(content, path):
-    LOGGER.debug('[Save] {}'.format(path))
+    # LOGGER.debug('[Save] {}'.format(path))
     create_missing_dirs(path)
     with open(path, 'w') as f:
         f.write(content)
