@@ -1,0 +1,8 @@
+tokens.py
+
+**/.DS_Store
+**/.vscode
+**/__pycache__
+**/.idea
+download
+**/log/
