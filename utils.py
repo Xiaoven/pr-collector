@@ -46,6 +46,7 @@ def save(content, path):
     create_missing_dirs(path)
     with open(path, 'w') as f:
         f.write(content)
+        f.flush()
 
 
 def exists_file(path):
