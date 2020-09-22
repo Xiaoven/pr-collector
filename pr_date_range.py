@@ -22,6 +22,7 @@ def search_pr(language: str, start_date: str, end_date=''):
     ulink = query + '&page={}&per_page=100'
 
     for page_cnt in range(1, 3):
+        utils.LOGGER.warning(ulink.format(page_cnt))
         resp = utils.send(ulink.format(page_cnt), token, 3)
         if not resp or resp.status_code != 200:
             break
@@ -38,6 +39,8 @@ def search_pr(language: str, start_date: str, end_date=''):
             with open(out_path.format(start_date, end_date), 'a+') as outfile:
                 outfile.writelines(file_list)
                 outfile.flush()
+
+    utils.LOGGER.warning(f'pr count{pr_cnt}')
     return pr_cnt
 
 
@@ -64,8 +67,8 @@ def save_files(csv_file: str, language: str):
 
 
 if __name__ == '__main__':
-    start_date = datetime.now()
-    end_date = start_date - timedelta(days=30)
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=30)
     total_cnt = 0
     while total_cnt < 20000:
         total_cnt += search_pr('java', start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))

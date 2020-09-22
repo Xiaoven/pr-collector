@@ -49,8 +49,8 @@ def save(content, path):
     create_missing_dirs(path)
     with open(path, 'w') as f:
         f.write(content)
-        f.flush()
-
+        f.flush()  # copy data from the program buffer to the operating system buffer
+        # os.fsync(f) # write to disk
 
 def exists_file(path):
     return os.path.exists(path)
