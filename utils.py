@@ -5,6 +5,8 @@ import json
 import subprocess
 from loguru import logger as LOGGER
 
+from config import proxies  # if you don't need it, just delete it and its usages
+
 requests.adapters.DEFAULT_RETRIES = 5
 SESSION = requests.Session()
 SESSION.keep_alive = False
@@ -25,9 +27,10 @@ def send(url, token='', max_retry=1):
     if token:
         headers['Authorization'] = 'token ' + token
 
+
     res = None
     try:
-        res = SESSION.get(url, headers=headers, stream=False, timeout=10)
+        res = SESSION.get(url, headers=headers, stream=False, timeout=10, proxies=proxies)
         return res
     except Exception as e:
         LOGGER.error('[Request Error] url: {}    - msg: {}'.format(url, e))

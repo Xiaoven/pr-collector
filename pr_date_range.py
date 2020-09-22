@@ -1,5 +1,5 @@
 import utils
-from tokens import token
+from config import token
 from datetime import datetime, timedelta
 
 
