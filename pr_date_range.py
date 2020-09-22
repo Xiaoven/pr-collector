@@ -1,6 +1,7 @@
 import utils
 from config import token
 from datetime import datetime, timedelta
+import glob
 
 
 def search_pr(language: str, start_date: str, end_date=''):
@@ -22,7 +23,6 @@ def search_pr(language: str, start_date: str, end_date=''):
     ulink = query + '&page={}&per_page=100'
 
     for page_cnt in range(1, 3):
-        utils.LOGGER.warning(ulink.format(page_cnt))
         resp = utils.send(ulink.format(page_cnt), token, 3)
         if not resp or resp.status_code != 200:
             break
@@ -64,9 +64,10 @@ def save_files(csv_file: str, language: str):
             if not resp or resp.status_code != 200:
                 continue
             utils.save(resp.text, savepath)
+            break
 
 
-if __name__ == '__main__':
+def step1():
     end_date = datetime.now()
     start_date = end_date - timedelta(days=30)
     total_cnt = 0
@@ -75,3 +76,15 @@ if __name__ == '__main__':
         start_date -= timedelta(days=31)
         end_date -= timedelta(days=31)
     utils.LOGGER.warning(f'total:{total_cnt}')
+
+
+def step2():
+    root = 'out/java/links'
+    paths = glob.glob(f'{root}/**/*.csv', recursive=True)
+    for p in paths:
+        save_files(p, 'java')
+
+
+if __name__ == '__main__':
+    # step1()
+    step2()

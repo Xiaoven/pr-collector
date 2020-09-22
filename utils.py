@@ -27,7 +27,6 @@ def send(url, token='', max_retry=1):
     if token:
         headers['Authorization'] = 'token ' + token
 
-
     res = None
     try:
         res = SESSION.get(url, headers=headers, stream=False, timeout=10, proxies=proxies)
@@ -51,6 +50,7 @@ def save(content, path):
         f.write(content)
         f.flush()  # copy data from the program buffer to the operating system buffer
         # os.fsync(f) # write to disk
+
 
 def exists_file(path):
     return os.path.exists(path)
