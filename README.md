@@ -9,3 +9,12 @@
 [set stream parameter to False](https://2.python-requests.org/en/master/user/advanced/#body-content-workflow)
 
 [keep-alive is automatic within a session](https://2.python-requests.org/en/master/user/advanced/#keep-alive)
+
+## Getting Start
+1. add `config.py`
+```python
+token = 'YOUR TOKEN'
+proxies = {} # YOUR Proxy
+```
+
+2. set `MAX_TOTAL_NUM`, `MAX_EACH_NUM ` and `MIN_STARS` at `pr_date_range.py` as you need.
