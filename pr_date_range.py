@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 import glob
 import re
 
-MAX_TOTAL_NUM = 2000
-MAX_EACH_NUM = 200
+MAX_TOTAL_NUM = 36000
+MAX_EACH_NUM = 400
 MIN_STARS = 20 # min star number of a repository
 RE_REPO_NAME = re.compile('https://api\.github\.com/repos/([^/]+/[^/]+)/')
 
@@ -48,7 +48,7 @@ def search_pr(language: str, start_date: str, end_date=''):
         query += f'..{end_date}'
     ulink = query + '&page={}&per_page=100'
 
-    for page_cnt in range(1, 101):
+    for page_cnt in range(1, 11):
         if pr_cnt >= MAX_EACH_NUM:
             break
 
@@ -102,17 +102,16 @@ def save_files(csv_file: str, language: str):
             if not resp or resp.status_code != 200:
                 continue
             utils.save(resp.text, savepath)
-            break
 
 
 def step1():
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=30)
+    start_date = end_date - timedelta(days=4)
     total_cnt = 0
     while total_cnt < MAX_TOTAL_NUM:
         total_cnt += search_pr('java', start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
-        start_date -= timedelta(days=31)
-        end_date -= timedelta(days=31)
+        start_date -= timedelta(days=5)
+        end_date -= timedelta(days=5)
     utils.LOGGER.warning(f'total:{total_cnt}')
 
 
