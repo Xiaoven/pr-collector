@@ -46,7 +46,7 @@ def search_pr(language: str, start_date: str, end_date=''):
     query = f'https://api.github.com/search/issues?q=language:{language}+is:pr+is:open+created:{start_date}'
     if end_date:
         query += f'..{end_date}'
-    ulink = query + '&page={}&per_page=100'
+    ulink = query + 'c'
 
     for page_cnt in range(1, 101):
         if pr_cnt >= MAX_EACH_NUM:
@@ -102,7 +102,6 @@ def save_files(csv_file: str, language: str):
             if not resp or resp.status_code != 200:
                 continue
             utils.save(resp.text, savepath)
-            break
 
 
 def step1():
@@ -124,5 +123,5 @@ def step2():
 
 
 if __name__ == '__main__':
-    step1()
-    # step2()
+    # step1()
+    step2()
