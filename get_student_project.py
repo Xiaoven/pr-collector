@@ -5,14 +5,20 @@ if __name__ == '__main__':
     save_path = 'student_repos/'
     utils.create_missing_dirs(save_path)
 
-    link1 = 'https://api.github.com/search/repositories?q=course+project+language:java+stars:0..10+size:900..5000&per_page=100&page='
-    page_num = 1
+    max_num = 20
+    cur_num = 0
+
+    # link1 = 'https://api.github.com/search/repositories?q=course+project+language:java+stars:0..10+size:900..5000&per_page=100&page='
+    link1 = 'https://api.github.com/search/repositories?q=language:java+stars:400..1000+size:900..5000&per_page=100&page='
+    page_num = 0
     while page_num <= 10:
+        page_num += 1
+
         resp = utils.send(link1 + str(page_num), token, 3)
         if not resp or resp.status_code != 200:
             break
 
-        with open(save_path + str(page_num) + '.json', 'w') as f:
+        with open(save_path + 'star' + str(page_num) + '.json', 'w') as f:
             f.write(resp.text)
 
         jresp = resp.json()
@@ -44,8 +50,15 @@ if __name__ == '__main__':
                     contain_gradle = True
 
             if not contain_app and (contain_gradle or contain_pom):
-                with open(save_path + 'rst.txt', 'a') as f:
+                with open(save_path + 'star_rst.txt', 'a') as f:
                     f.write(html_url + '\n')
+                cur_num += 1
+
+            if cur_num >= max_num:
+                break
+        if cur_num >= max_num:
+            break
+
 
 
 
