@@ -44,12 +44,12 @@ if __name__ == '__main__':
                 if content['name'] == 'app' and content['type'] == 'dir':
                     contain_app = True
                     break
-                elif content['name'] == 'pom.xml':
+                if content['name'] == 'pom.xml':
                     contain_pom = True
-                elif content['name'] == 'build.gradle':
+                if content['name'] == 'build.gradle':
                     contain_gradle = True
 
-            if not contain_app and (contain_gradle or contain_pom):
+            if not contain_app and not contain_gradle and contain_pom:
                 with open(save_path + 'star_rst.txt', 'a') as f:
                     f.write(html_url + '\n')
                 cur_num += 1
