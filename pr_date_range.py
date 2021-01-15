@@ -122,6 +122,43 @@ def step2():
         save_files(p, 'java')
 
 
+def normal_search(language: str):
+    out_path = 'out/' + language + '/links/{}.csv'
+    utils.create_missing_dirs(out_path)
+    pr_cnt = 0
+
+    ulink = f'https://api.github.com/search/issues?q=language:{language}+is:pr+is:open'
+    ulink = ulink + '&page={}&per_page=100'
+
+    for page_num in range(1, 11):
+        resp = utils.send(ulink.format(page_num), token, 3)
+        if not resp or resp.status_code != 200:
+            break
+        jresp = resp.json()
+
+        file_list = []
+        if 'items' in jresp:
+            for item in jresp['items']:
+                if 'url' in item:
+                    repo_name = get_repo_name(item['url'])
+                    if not repo_name:
+                        continue  # If it works fine, this line wont be executed
+
+                    link_files = item['url'].replace('/issues/', '/pulls/') + '/files\n'
+                    file_list.append(link_files)
+                    pr_cnt += 1
+
+        if file_list:
+            with open(out_path.format(page_num), 'a+') as outfile:
+                outfile.writelines(file_list)
+                outfile.flush()
+
+        # break
+
+    utils.LOGGER.warning(f'pr count {pr_cnt}')
+
+
 if __name__ == '__main__':
     # step1()
+    normal_search('java')
     step2()
