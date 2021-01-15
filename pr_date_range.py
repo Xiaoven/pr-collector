@@ -6,7 +6,7 @@ import re
 
 MAX_TOTAL_NUM = 36000
 MAX_EACH_NUM = 400
-MIN_STARS = 20 # min star number of a repository
+MIN_STARS = 20  # min star number of a repository
 RE_REPO_NAME = re.compile('https://api\.github\.com/repos/([^/]+/[^/]+)/')
 
 
@@ -46,7 +46,7 @@ def search_pr(language: str, start_date: str, end_date=''):
     query = f'https://api.github.com/search/issues?q=language:{language}+is:pr+is:open+created:{start_date}'
     if end_date:
         query += f'..{end_date}'
-    ulink = query + 'c'
+    ulink = query + '&page={}&per_page=100'
 
     for page_cnt in range(1, 11):
         if pr_cnt >= MAX_EACH_NUM:

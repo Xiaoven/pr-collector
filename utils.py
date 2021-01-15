@@ -21,13 +21,11 @@ LOGGER.add(LOG_PATH + '/{time}.log')
 
 def send(url, token='', max_retry=1):
     time.sleep(SLEEP_TIME)
-    link = ''
 
     headers = {'User-Agent': user_agent}
     if token:
         headers['Authorization'] = 'token ' + token
 
-    res = None
     try:
         res = SESSION.get(url, headers=headers, stream=False, timeout=10, proxies=proxies)
         return res
