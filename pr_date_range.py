@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 import glob
 import re
 
-MAX_TOTAL_NUM = 36000
-MAX_EACH_NUM = 400
-MIN_STARS = 20  # min star number of a repository
+MAX_TOTAL_NUM = 10000
+# MAX_EACH_NUM = 1000
+# MIN_STARS = 20  # min star number of a repository
 RE_REPO_NAME = re.compile(r'https://api\.github\.com/repos/([^/]+/[^/]+)/')
 RE_SHA = re.compile(r'https://github\.com/[^/]+/[^/]+/blob/(\w+)/')
 
@@ -50,8 +50,8 @@ def search_pr(language: str, start_date: str, end_date=''):
     ulink = query + '&page={}&per_page=100'
 
     for page_cnt in range(1, 11):
-        if pr_cnt >= MAX_EACH_NUM:
-            break
+        # if pr_cnt >= MAX_EACH_NUM:
+        #     break
 
         resp = utils.send(ulink.format(page_cnt), token, 3)
         if not resp or resp.status_code != 200:
@@ -65,8 +65,8 @@ def search_pr(language: str, start_date: str, end_date=''):
                     repo_name = get_repo_name(item['url'])
                     if not repo_name:
                         continue  # If it works fine, this line wont be executed
-                    if get_repo_stars(repo_name) <= MIN_STARS:
-                        continue
+                    # if get_repo_stars(repo_name) <= MIN_STARS:
+                    #     continue
 
                     link_files = item['url'].replace('/issues/', '/pulls/') + '/files\n'
                     file_list.append(link_files)
@@ -77,7 +77,7 @@ def search_pr(language: str, start_date: str, end_date=''):
                 outfile.writelines(file_list)
                 outfile.flush()
 
-        break
+        # break
 
     utils.LOGGER.warning(f'pr count {pr_cnt}')
     return pr_cnt
@@ -124,12 +124,12 @@ def save_files(csv_file: str, language: str):
 
 def step1():
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=4)
+    start_date = end_date - timedelta(days=1)
     total_cnt = 0
     while total_cnt < MAX_TOTAL_NUM:
         total_cnt += search_pr('java', start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
-        start_date -= timedelta(days=5)
-        end_date -= timedelta(days=5)
+        start_date -= timedelta(days=2)
+        end_date -= timedelta(days=2)
     utils.LOGGER.warning(f'total:{total_cnt}')
 
 
@@ -177,6 +177,6 @@ def normal_search(language: str):
 
 
 if __name__ == '__main__':
-    # step1()
-    normal_search('java')
+    step1()
+    # normal_search('java')
     step2()
