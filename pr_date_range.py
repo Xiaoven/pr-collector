@@ -1,3 +1,5 @@
+import json
+
 import utils
 from config import token
 from datetime import datetime, timedelta
@@ -98,23 +100,34 @@ def save_files(csv_file: str, language: str):
             link = line.strip()
 
             savepath = link.replace('https://api.github.com/repos/', out_path) + '.json'
-            if utils.exists_file(savepath):  # if file exists, do not send unnecessary request
-                continue
 
-            resp = utils.send(link, token, 3)
-            if not resp or resp.status_code != 200:
-                continue
-            utils.save(resp.text, savepath)
+            # json_resp = None
+            if utils.exists_file(savepath):  # if file exists, do not send unnecessary request
+                with open(savepath, 'r') as jfile:
+                    json_resp = json.load(jfile)
+            else:
+                resp = utils.send(link, token, 3)
+                if not resp or resp.status_code != 200:
+                    continue
+                utils.save(resp.text, savepath)
+                json_resp = resp.json()
+                # pass
 
             # Github file status: 'added' , 'modified' , 'removed' , 'renamed'
             # find the fist non-removed status file and extract the sha
             sha = ''
-            for file in resp.json():
-                if file['status'] != 'removed':
-                    m = RE_SHA.search(file['blob_url'])
-                    if m:
-                        sha = m.groups()[0]
-                        break
+            if json_resp:
+                for file in json_resp:
+                    if file['status'] != 'removed' and 'blob_url' in file:
+                        try:
+                            m = RE_SHA.search(file['blob_url'])
+                            if m:
+                                sha = m.groups()[0]
+                                break
+                        except TypeError as e:
+                            # "blob_url": null
+                            utils.LOGGER.error(f'[Sha Error] {savepath}\n{e}')
+                            continue
             new_csv_lines.append(f'{line.strip()},{sha}\n')
 
     with open(csv_file, 'w') as outfile:
@@ -177,6 +190,6 @@ def normal_search(language: str):
 
 
 if __name__ == '__main__':
-    step1()
+    # step1()
     # normal_search('java')
     step2()
