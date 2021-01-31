@@ -81,7 +81,7 @@ def search_pr(language: str, start_date: str, end_date=''):
 
         # break
 
-    utils.LOGGER.warning(f'pr count {pr_cnt}')
+    utils.logger.warning(f'pr count {pr_cnt}')
     return pr_cnt
 
 
@@ -126,7 +126,7 @@ def save_files(csv_file: str, language: str):
                                 break
                         except TypeError as e:
                             # "blob_url": null
-                            utils.LOGGER.error(f'[Sha Error] {savepath}\n{e}')
+                            utils.logger.error(f'[Sha Error] {savepath}\n{e}')
                             continue
             new_csv_lines.append(f'{line.strip()},{sha}\n')
 
@@ -143,7 +143,7 @@ def step1():
         total_cnt += search_pr('java', start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
         start_date -= timedelta(days=2)
         end_date -= timedelta(days=2)
-    utils.LOGGER.warning(f'total:{total_cnt}')
+    utils.logger.warning(f'total:{total_cnt}')
 
 
 def step2():
@@ -186,7 +186,7 @@ def normal_search(language: str):
 
         # break
 
-    utils.LOGGER.warning(f'pr count {pr_cnt}')
+    utils.logger.warning(f'pr count {pr_cnt}')
 
 
 if __name__ == '__main__':
