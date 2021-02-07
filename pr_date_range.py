@@ -1,10 +1,12 @@
-import json
+from threading import Thread
 
 import utils
-from config import token
+from config import tokens
 from datetime import datetime, timedelta
 import glob
 import re
+import math
+
 
 MAX_TOTAL_NUM = 1000
 # MAX_EACH_NUM = 1000
@@ -19,7 +21,7 @@ def get_repo_stars(repo_name: str):
     :return: the number of stars
     '''
     ulink = f'https://api.github.com/repos/{repo_name}'
-    resp = utils.send(ulink, token, 3)
+    resp = utils.send(ulink, tokens[0], 3)
     if not resp or resp.status_code != 200:
         return -1
     return resp.json()['stargazers_count']
@@ -55,7 +57,7 @@ def search_pr(language: str, start_date: str, end_date=''):
         # if pr_cnt >= MAX_EACH_NUM:
         #     break
 
-        resp = utils.send(ulink.format(page_cnt), token, 3)
+        resp = utils.send(ulink.format(page_cnt), tokens[0], 3)
         if not resp or resp.status_code != 200:
             break
         jresp = resp.json()
@@ -89,13 +91,11 @@ def save_files(csv_file: str, language: str):
     :param language: repository language
     :return: none
     """
-    out_path = f'out/{language}/files/'
-    with open(csv_file, 'r') as f:
-        for line in f:
+    def task(tasks: list, token=''):
+        out_path = f'out/{language}/files/'
+        for line in tasks:
             link = line.strip()
-
             savepath = link.replace('https://api.github.com/repos/', out_path) + '.json'
-
             if utils.exists_file(savepath):  # if file exists, do not send unnecessary request
                 continue
             else:
@@ -103,6 +103,29 @@ def save_files(csv_file: str, language: str):
                 if not resp or resp.status_code != 200:
                     continue
                 utils.save(resp.text, savepath)
+
+    with open(csv_file, 'r') as f:
+        lines = f.readlines()
+
+        # divide tasks according to token number
+        token_len = len(tokens)
+        lines_len = len(lines)
+        delta = math.ceil(lines_len/token_len)
+        start = 0
+        thread_list = list()
+        for i in range(token_len):
+            end = start + delta
+            if end > lines_len:
+                end = lines_len
+
+            t = Thread(target=task, args=(lines[start:end], tokens[i]))
+            t.start()
+            thread_list.append(t)
+
+            start = end
+
+        for t in thread_list:
+            t.join()
 
 
 def step1():
@@ -133,7 +156,7 @@ def normal_search(language: str):
 
     file_list = []
     for page_num in range(1, 11):
-        resp = utils.send(ulink.format(page_num), token, 3)
+        resp = utils.send(ulink.format(page_num), tokens[0], 3)
         if not resp or resp.status_code != 200:
             break
         jresp = resp.json()
@@ -158,6 +181,6 @@ def normal_search(language: str):
 
 
 if __name__ == '__main__':
-    step1()
+    # step1()
     # normal_search('java')
-    # step2()
+    step2()
