@@ -19,7 +19,7 @@ os.makedirs(LOG_PATH, exist_ok=True)
 logger.add(LOG_PATH + '/{time}.log')
 
 
-def send(url, token='', max_retry=1, sleep_time=12):
+def send(url, token='', max_retry=1, sleep_time=4):
     time.sleep(BASE_SLEEP_TIME)
 
     headers = {'User-Agent': user_agent}
@@ -35,8 +35,9 @@ def send(url, token='', max_retry=1, sleep_time=12):
         # only retry when exception happens
         if max_retry <= 0:
             return None
-        time.sleep(sleep_time + BASE_SLEEP_TIME)
-        return send(url, token, max_retry - 1)
+        cur_sleep_time = sleep_time + BASE_SLEEP_TIME
+        time.sleep(cur_sleep_time)
+        return send(url, token, max_retry - 1, sleep_time=cur_sleep_time)
 
 
 def save(content, path):
