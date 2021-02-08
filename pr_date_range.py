@@ -1,11 +1,8 @@
-from threading import Thread
-
 import utils
 from config import tokens
 from datetime import datetime, timedelta
 import glob
 import re
-import math
 
 
 MAX_TOTAL_NUM = 10000
@@ -91,47 +88,28 @@ def save_files(csv_file: str, language: str):
     :param language: repository language
     :return: none
     """
-    def task(tasks: list, token=''):
-        out_path = f'out/{language}/files/'
-        # i = 0
-        for line in tasks:
-            # i += 1
-            # if i > 4:
-            #     return
-            link = line.strip()
-            savepath = link.replace('https://api.github.com/repos/', out_path) + '.json'
-            if utils.exists_file(savepath):  # if file exists, do not send unnecessary request
-                # print(f'Existed {savepath}!')
-                continue
-            else:
-                resp = utils.send(link, token, 3)
-                if not resp or resp.status_code != 200:
-                    continue
-                utils.save(resp.text, savepath)
-                # print(f'New {savepath}!')
-
+    out_path = f'out/{language}/files/'
     with open(csv_file, 'r') as f:
         lines = f.readlines()
-
-        # divide tasks according to token number
         token_len = len(tokens)
         lines_len = len(lines)
-        delta = math.ceil(lines_len/token_len)
-        start = 0
-        thread_list = list()
-        for i in range(token_len):
-            end = start + delta
-            if end > lines_len:
-                end = lines_len
+        idx = -1
 
-            t = Thread(target=task, args=(lines[start:end], tokens[i]))
-            t.start()
-            thread_list.append(t)
-
-            start = end
-
-        for t in thread_list:
-            t.join()
+        while idx < lines_len:
+            for i in range(token_len):
+                idx += 1
+                if idx < lines_len:
+                    link = lines[idx].strip()
+                    savepath = link.replace('https://api.github.com/repos/', out_path) + '.json'
+                    if utils.exists_file(savepath):  # if file exists, do not send unnecessary request
+                        continue
+                    else:
+                        resp = utils.send(link, tokens[i], 3)
+                        if not resp or resp.status_code != 200:
+                            continue
+                        utils.save(resp.text, savepath)
+                else:
+                    return
 
 
 def step1():
@@ -150,6 +128,7 @@ def step2():
     paths = glob.glob(f'{root}/**/*.csv', recursive=True)
     for p in paths:
         save_files(p, 'java')
+        break
 
 
 def normal_search(language: str):
@@ -187,5 +166,5 @@ def normal_search(language: str):
 
 
 if __name__ == '__main__':
-    step1()
+    # step1()
     step2()

@@ -10,7 +10,7 @@ from config import proxies  # if you don't need it, just delete it and its usage
 requests.adapters.DEFAULT_RETRIES = 5
 SESSION = requests.Session()
 SESSION.keep_alive = False
-BASE_SLEEP_TIME = 4
+BASE_SLEEP_TIME = 3
 
 user_agent = 'Mozilla/5.0 ven(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
 
@@ -19,7 +19,7 @@ os.makedirs(LOG_PATH, exist_ok=True)
 logger.add(LOG_PATH + '/{time}.log')
 
 
-def send(url, token='', max_retry=1, sleep_time=4):
+def send(url, token='', max_retry=1, sleep_time=1):
     time.sleep(BASE_SLEEP_TIME)
 
     headers = {'User-Agent': user_agent}
