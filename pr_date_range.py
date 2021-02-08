@@ -8,7 +8,7 @@ import re
 import math
 
 
-MAX_TOTAL_NUM = 1000
+MAX_TOTAL_NUM = 10000
 # MAX_EACH_NUM = 1000
 # MIN_STARS = 20  # min star number of a repository
 RE_REPO_NAME = re.compile(r'https://api\.github\.com/repos/([^/]+/[^/]+)/')
@@ -93,16 +93,22 @@ def save_files(csv_file: str, language: str):
     """
     def task(tasks: list, token=''):
         out_path = f'out/{language}/files/'
+        # i = 0
         for line in tasks:
+            # i += 1
+            # if i > 4:
+            #     return
             link = line.strip()
             savepath = link.replace('https://api.github.com/repos/', out_path) + '.json'
             if utils.exists_file(savepath):  # if file exists, do not send unnecessary request
+                # print(f'Existed {savepath}!')
                 continue
             else:
                 resp = utils.send(link, token, 3)
                 if not resp or resp.status_code != 200:
                     continue
                 utils.save(resp.text, savepath)
+                # print(f'New {savepath}!')
 
     with open(csv_file, 'r') as f:
         lines = f.readlines()
@@ -181,6 +187,5 @@ def normal_search(language: str):
 
 
 if __name__ == '__main__':
-    # step1()
-    # normal_search('java')
+    step1()
     step2()
