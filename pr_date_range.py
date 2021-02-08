@@ -56,6 +56,7 @@ def search_pr(language: str, start_date: str, end_date=''):
 
         resp = utils.send(ulink.format(page_cnt), tokens[0], 3)
         if not resp or resp.status_code != 200:
+            utils.logger.warning(f'[No response] {ulink.format(page_cnt)}\naccess_token={tokens[0]}')
             break
         jresp = resp.json()
 
@@ -128,7 +129,6 @@ def step2():
     paths = glob.glob(f'{root}/**/*.csv', recursive=True)
     for p in paths:
         save_files(p, 'java')
-        break
 
 
 def normal_search(language: str):
@@ -158,7 +158,7 @@ def normal_search(language: str):
                     pr_cnt += 1
 
     if file_list:
-        with open(out_path.format(page_num), 'w') as outfile:
+        with open(out_path.format('link'), 'w') as outfile:
             outfile.writelines(file_list)
             outfile.flush()
 
@@ -166,5 +166,5 @@ def normal_search(language: str):
 
 
 if __name__ == '__main__':
-    # step1()
-    step2()
+    step1()
+    # step2()
